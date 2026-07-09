@@ -71,24 +71,27 @@ jobs:
           review_mode: both
           tone_mode: balanced
 ```
-> [!IMPORTANT]  
+
+> [!IMPORTANT]
+>
 > ## Setting Up Your API Key Securely
 >
 > Never hardcode your API key directly into your workflow file or commit it to GitHub.
 >
 > Instead, store it safely using **GitHub Actions Secrets**:
 >
-> 1. Open your GitHub repository  
-> 2. Go to **Settings**  
-> 3. Navigate to **Secrets and variables → Actions**  
-> 4. Click **New repository secret**  
-> 5. Create a secret named `LLM_API_KEY`  
-> 6. Paste your API key as the value  
+> 1. Open your GitHub repository
+> 2. Go to **Settings**
+> 3. Navigate to **Secrets and variables → Actions**
+> 4. Click **New repository secret**
+> 5. Create a secret named `LLM_API_KEY`
+> 6. Paste your API key as the value
 > 7. Click **Add secret**
 >
 > OpenRabbit will automatically use the secret securely inside your GitHub Actions workflow.
 >
 > This keeps your API key encrypted and prevents accidental leaks in commits, logs, or pull requests.
+
 ---
 
 ## The Open Source Fight
@@ -104,12 +107,12 @@ OpenRabbit **destroys this risk** by shifting the power back to the developer. B
 ## Features
 
 - **Fixes the "Context Blindness" Problem**  
-  Most AI reviewers act like your code exists in isolation, which is kinda dumb. OpenRabbit actually tries to understand the whole project:  
-  - **Two-Stage File Fetch**: If it feels like it’s missing context, it can pull in extra files instead of just judging the diff blindly.  
-  - **Linked Issue Awareness**: It reads linked GitHub issues so it knows what the code is *supposed* to do, not just if it compiles.
+  Most AI reviewers act like your code exists in isolation, which is kinda dumb. OpenRabbit actually tries to understand the whole project:
+  - **Two-Stage File Fetch**: If it feels like it’s missing context, it can pull in extra files instead of just judging the diff blindly.
+  - **Linked Issue Awareness**: It reads linked GitHub issues so it knows what the code is _supposed_ to do, not just if it compiles.
 
 - **"Socratic Scaffold" (Basically a Mentor Mode)**  
-  Instead of just dumping the answer, it acts like a mentor and asks questions so you figure stuff out yourself. It explains *why* something is wrong or risky, not just *what* is wrong. It only gives direct fixes when it’s something simple or obvious.
+  Instead of just dumping the answer, it acts like a mentor and asks questions so you figure stuff out yourself. It explains _why_ something is wrong or risky, not just _what_ is wrong. It only gives direct fixes when it’s something simple or obvious.
 
 - **"Performance & Scalability Expert"**  
   This one is for serious code. It checks for things like race conditions, memory leaks, and slow logic (like O(n²)). It also makes sure you’re not ignoring caching or rewriting stuff that already exists. Basically, it asks: “Will this still work if traffic becomes 10x?”
@@ -118,8 +121,8 @@ OpenRabbit **destroys this risk** by shifting the power back to the developer. B
   It ignores the PR description at first so it doesn’t get biased and just looks at the code. Then it checks for real problems like SQL injection, XSS, or broken auth. It also calls out fake “security improvements” where someone removes checks but claims things got safer.
 
 - **No More "AI Slop"**  
-  You know that polished but useless AI feedback? Yeah, this avoids that:  
-  - **Suggestion Validation**: It checks if suggestions actually match your code before showing them.  
+  You know that polished but useless AI feedback? Yeah, this avoids that:
+  - **Suggestion Validation**: It checks if suggestions actually match your code before showing them.
   - **Senior Engineer Voice**: It talks more like a real tech lead instead of nitpicking random naming stuff.
 
 - **Stops "Vibe Coding" (DRIFT Detection)**  
@@ -138,16 +141,36 @@ If you want better performance and fewer interruptions, you should use your own 
 
 ## Review Modes
 
-- **summary:** single summary review comment (no inline comments)  
-- **inline:** post only inline comments and suggestions  
+- **summary:** single summary review comment (no inline comments)
+- **inline:** post only inline comments and suggestions
 - **both:** post both the summary and inline comments (default)
 
 ---
 
+## Security scanning (SARIF) & run summary
+
+OpenRabbit can emit its findings as [SARIF](https://sarifweb.azurewebsites.net/) so they appear in the GitHub **Security → Code scanning** tab. The action writes `openrabbit.sarif` and exposes it through the `sarif-file` output. Upload it with:
+
+```yaml
+- name: OpenRabbit
+  id: openrabbit
+  uses: aryanbrite/openrabbit@main
+  with:
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+    llm_api_key: ${{ secrets.LLM_API_KEY }}
+- name: Upload SARIF
+  if: always()
+  uses: github/codeql-action/upload-sarif@v3
+  with:
+    sarif_file: ${{ steps.openrabbit.outputs.sarif-file }}
+```
+
+The review is also rendered into the workflow run summary, so you can read it without opening the PR. You can override the SARIF output location with the `sarif_path` input (default `openrabbit.sarif`).
+
 ## Contributing
 
-- Open an issue or PR  
-- See `src/llm` for adding new provider adapters  
+- Open an issue or PR
+- See `src/llm` for adding new provider adapters
 
 ---
 
@@ -170,8 +193,8 @@ Licensed under the MIT license.
 >
 > Like the repo fetching logic and then I used codex and copilot to make it. I confirm that I have used a lot of copilot and codex to make this OSS project but I tested this tool on each and every edge cases I could try.
 >
->  I opened around 100+ stale PRs to check weather this AI could be manuplated or not.
-> 
->  I found a lot of flaws like judging based on cotext and A lot of AI byass.
-> 
->  Yes, The code was written by a coding agent. While i researched how can i get a pass to the github marketplace. How the branding works. I used chatgpt and a bit of my mind to review the code.
+> I opened around 100+ stale PRs to check weather this AI could be manuplated or not.
+>
+> I found a lot of flaws like judging based on cotext and A lot of AI byass.
+>
+> Yes, The code was written by a coding agent. While i researched how can i get a pass to the github marketplace. How the branding works. I used chatgpt and a bit of my mind to review the code.

@@ -34,33 +34,14 @@ inputs:
   debiased_mode:
     description: Redact PR metadata for the initial pass
     required: false
-    default: "false"
+    default: 'false'
+  sarif_path:
+    description: Output path for the SARIF file with security/quality findings
+    required: false
+    default: openrabbit.sarif
+outputs:
+  sarif-file:
+    description: Path to the SARIF file with security/quality findings, for upload to GitHub code scanning.
 runs:
-  using: composite
-  steps:
-    - name: Setup Node
-      uses: actions/setup-node@v5
-      with:
-        node-version: '20'
-    - name: Install dependencies
-      run: npm install
-      shell: bash
-      working-directory: ${{ github.action_path }}
-    - name: Build action
-      run: npm run build
-      shell: bash
-      working-directory: ${{ github.action_path }}
-    - name: Run Coderabbit reviewer
-      run: node dist/action.js
-      shell: bash
-      working-directory: ${{ github.action_path }}
-      env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
-        LLM_PROVIDER: ${{ inputs.llm_provider }}
-        LLM_API_URL: ${{ inputs.llm_api_url }}
-        LLM_API_KEY: ${{ inputs.llm_api_key }}
-        LLM_MODEL: ${{ inputs.llm_model }}
-        REVIEW_MODE: ${{ inputs.review_mode }}
-        TONE_MODE: ${{ inputs.tone_mode }}
-        REVIEW_LENS: ${{ inputs.review_lens }}
-        DEBIASED_MODE: ${{ inputs.debiased_mode }}
+  using: node20
+  main: dist/index.mjs

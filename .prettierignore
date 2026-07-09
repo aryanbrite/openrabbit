@@ -1,0 +1,14 @@
+dist
+node_modules
+coverage
+package-lock.json
+src/reviewer.ts
+src/cli.ts
+src/types.ts
+src/llm/groq.ts
+src/llm/index.ts
+tests/groq.test.ts
+tests/reviewer.test.ts
+.github/CONTRIBUTING.md
+.github/FUNDING.YML
+.github/copilot-instructions.md

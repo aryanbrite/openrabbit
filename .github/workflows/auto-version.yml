@@ -11,7 +11,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.actor != 'github-actions[bot]'  # Skip bot commits to avoid loops
+    if: github.actor != 'github-actions[bot]' # Skip bot commits to avoid loops
 
     steps:
       - name: Checkout repository
@@ -23,11 +23,11 @@ jobs:
       - name: Locate README file
         run: |
           if [ -f README.md ]; then
-            echo "README_FILE=README.md" >> $GITHUB_ENV
+            echo "README_FILE=README.md" >> "$GITHUB_ENV"
           elif [ -f Readme.md ]; then
-            echo "README_FILE=Readme.md" >> $GITHUB_ENV
+            echo "README_FILE=Readme.md" >> "$GITHUB_ENV"
           else
-            echo "README_FILE=README.md" >> $GITHUB_ENV
+            echo "README_FILE=README.md" >> "$GITHUB_ENV"
             touch README.md
           fi
 
@@ -46,16 +46,16 @@ jobs:
           if [ -z "$CURRENT_VERSION" ]; then
             CURRENT_VERSION="v0.0.0"
           fi
-          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> "$GITHUB_ENV"
           echo "Current version: $CURRENT_VERSION"
 
       - name: Bump version (patch)
         id: bump
         run: |
           TAG=${{ env.CURRENT_VERSION }}
-          MAJOR=$(echo $TAG | cut -d. -f1 | tr -d 'v')
-          MINOR=$(echo $TAG | cut -d. -f2)
-          PATCH=$(echo $TAG | cut -d. -f3)
+          MAJOR=$(echo "$TAG" | cut -d. -f1 | tr -d 'v')
+          MINOR=$(echo "$TAG" | cut -d. -f2)
+          PATCH=$(echo "$TAG" | cut -d. -f3)
           PATCH=$((PATCH + 1))
           if [ "$PATCH" -gt 9 ]; then
             PATCH=0
@@ -66,7 +66,7 @@ jobs:
             MAJOR=$((MAJOR + 1))
           fi
           NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "NEW_VERSION=$NEW_VERSION" >> "$GITHUB_ENV"
           echo "New version: $NEW_VERSION"
 
       - name: Create GitHub Release
@@ -74,7 +74,7 @@ jobs:
         with:
           tag_name: ${{ env.NEW_VERSION }}
           name: Release ${{ env.NEW_VERSION }}
-          body: "Automated semantic release from commit $GITHUB_SHA"
+          body: 'Automated semantic release from commit $GITHUB_SHA'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

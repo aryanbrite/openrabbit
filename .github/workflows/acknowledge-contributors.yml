@@ -5,7 +5,7 @@ on:
     types: [opened]
 
 permissions:
-  contents: write  # Allows git push
+  contents: write # Allows git push
 
 jobs:
   acknowledge:
@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Git
         run: |
@@ -31,9 +31,11 @@ jobs:
           fi
 
           # Safe output for GitHub Actions
-          echo "usernames<<EOF" >> $GITHUB_OUTPUT
-          echo "$USERNAMES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          {
+            echo "usernames<<EOF"
+            echo "$USERNAMES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Commit acknowledgment for each contributor
         run: |
@@ -42,7 +44,7 @@ jobs:
 
           for USERNAME in $USERNAMES; do
             # Fetch contributor info from GitHub API
-            NAME=$(curl -s https://api.github.com/users/$USERNAME | jq -r .name)
+            NAME=$(curl -s "https://api.github.com/users/$USERNAME" | jq -r .name)
             if [ "$NAME" == "null" ] || [ -z "$NAME" ]; then
               NAME=$USERNAME
             fi
