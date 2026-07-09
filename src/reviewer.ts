@@ -872,7 +872,7 @@ function formatCommentBody(comment: ReviewComment): string {
   return `${prefix}${comment.body}${suggestionBlock}`;
 }
 
-export async function runReview(context: ReviewContext): Promise<void> {
+export async function runReview(context: ReviewContext): Promise<ReviewResponse> {
   const octokit = new Octokit({ auth: context.githubToken });
   const { data: pullRequest } = await octokit.rest.pulls.get({
     owner: context.owner,
@@ -1156,4 +1156,11 @@ export async function runReview(context: ReviewContext): Promise<void> {
   }
 
   await octokit.rest.pulls.createReview(createParams as any);
+
+  return {
+    summary,
+    comments: allComments,
+    separatePrSuggestions,
+    requestedFiles: [],
+  };
 }

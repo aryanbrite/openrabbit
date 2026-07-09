@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint, format & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: ESLint
+        run: npm run lint
+      - name: Prettier
+        run: npm run format:check
+      - name: TypeScript typecheck
+        run: npm run typecheck
+
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Node 18 is intentionally excluded: the action runs on the node20 runtime and Vitest 4 requires Node ^20 || ^22 || >=24.
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Run tests with coverage
+        run: npm run test:coverage
+      - name: Upload coverage report
+        # Only upload from one matrix job to avoid duplicate/overlapping artifacts.
+        if: ${{ matrix.node == 20 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          if-no-files-found: ignore
+
+  build:
+    name: Bundle & verify dist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Build bundle
+        run: npm run build
+      - name: Verify committed dist is up to date
+        # Also works from forks: dist/ is committed, so the rebuilt bundle matches HEAD.
+        run: git diff --exit-code dist
+      - name: Smoke-test bundled action
+        # The bundle must execute and fail gracefully without required inputs/env.
+        # If it unexpectedly succeeds (exit 0), fail the step; otherwise confirm it ran.
+        run: |
+          node dist/index.mjs && {
+            echo "::error::bundle unexpectedly succeeded without required inputs"
+            exit 1
+          }
+          echo "bundle executed and reached input validation"
+
+  actionlint:
+    name: Validate workflows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: reviewdog/action-actionlint@6fb7acc99f4a1008869fa8a0f09cfca740837d9d

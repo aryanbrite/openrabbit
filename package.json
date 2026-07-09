@@ -1,16 +1,22 @@
 {
-  "name": "coderabbit-pr-reviewer",
+  "name": "openrabbit",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "dist/action.js",
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "vitest run",
-    "lint": "eslint . --ext .ts"
+  "main": "dist/index.mjs",
+  "engines": {
+    "node": ">=20"
   },
-  "bin": {
-    "coderabbit-pr-reviewer": "dist/cli.js"
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "ncc build src/action.ts -o dist --license licenses.txt && mv dist/index.js dist/index.mjs && rm -rf dist/llm dist/*.d.ts dist/package.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check-dist": "npm run build && git diff --exit-code dist || (echo \"dist is out of date - run: npm run build\" && exit 1)"
   },
   "dependencies": {
     "@actions/core": "^1.11.0",
@@ -19,8 +25,13 @@
     "undici": "^5.0.0"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vercel/ncc": "^0.38.1",
+    "@vitest/coverage-v8": "^4.1.8",
+    "eslint": "^9.0.0",
+    "prettier": "^3.3.0",
     "typescript": "^5.5.0",
-    "vitest": "^4.1.8",
-    "@types/node": "^20.0.0"
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^4.1.8"
   }
 }
