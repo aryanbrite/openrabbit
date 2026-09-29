@@ -158,7 +158,7 @@ Licensed under the MIT license.
 
 ---
 
-![version](https://img.shields.io/badge/version-v0.8.7-orange)
+![version](https://img.shields.io/badge/version-v0.8.8-orange)
 
 <a href="https://www.producthunt.com/products/openrabbit?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-openrabbit" target="_blank" rel="noopener noreferrer"><img alt="OpenRabbit - Free, AI PR reviewer that runs entirely in GitHub Actions | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1165149&amp;theme=dark&amp;t=1781176965489"></a>
 [![Open Rabbit - GitHub Marketplace](https://cdn.hackclub.com/019eb67a-89f3-7264-aa55-c697e4c45795/download.svg)](https://github.com/marketplace/actions/open-rabbit)
