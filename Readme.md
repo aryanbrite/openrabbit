@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="assets/logo.png" width="128" height="128" alt="OpenRabbit icon">
-</p>
+
 
 <h1 align="center">OpenRabbit</h1>
 
@@ -16,9 +14,7 @@
 
 ---
 
-<p align="center">
-  <img src="https://cdn.hackclub.com/019dd5c7-1c25-71b4-88c8-f04470b3d209/Untitled%20design%20(8)%20(1).png" alt="OpenRabbit demo" width="600">
-</p>
+
 
 <p align="center">
   <i>Thanks to the contributors and maintainers for making OpenRabbit possible.</i>
